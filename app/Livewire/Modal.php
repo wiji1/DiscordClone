@@ -1,29 +1,33 @@
 <?php
-// app/Livewire/Modal.php
+
 namespace App\Livewire;
 
-use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Modal extends Component
 {
-    public $show = false;
-    public $title = 'Modal Title';
-    public $modalId = 'livewire-modal';
+    public $isOpen = false;
+    public $modalId = '';
+    public $title = '';
+    public $content = '';
+    public $modalSize = 'md'; // sm, md, lg, xl
 
-    #[On('open-modal')]
-    public function openModal($modalId = null): void
+    protected $listeners = ['open-modal' => 'openModal', 'close-modal' => 'closeModal'];
+
+    public function openModal($data = [])
     {
-        echo "openModal\n";
-        print "openModal\n";
-        if ($modalId === null || $modalId === $this->modalId) {
-            $this->show = true;
-        }
+        logger($data);
+
+        $this->isOpen = true;
+        $this->modalId = $data['modalId'] ?? 'default-modal';
+        $this->title = $data['title'] ?? 'Modal Title';
+        $this->content = $data['content'] ?? '';
+        $this->modalSize = $data['size'] ?? 'md';
     }
 
     public function closeModal()
     {
-        $this->show = false;
+        $this->isOpen = false;
     }
 
     public function render()
