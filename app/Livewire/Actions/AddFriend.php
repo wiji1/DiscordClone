@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Actions;
 
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class AddFriend extends Component
@@ -11,13 +12,18 @@ class AddFriend extends Component
 
     public function addFriend()
     {
-        // Validate input
         $this->validate([
             'username' => 'required|min:3|max:50',
         ]);
 
-        // Add friend logic here
-        // ...
+        $users = DB::select('select * from users where username = ?', [$this->username]);
+        if (count($users) === 0) {
+            $this->addError('username', 'User not found');
+            return;
+        }
+
+        $user = $users[0];
+        //TODO: Send friend request to $user->id
 
         // Show success message
         $this->message = "Friend request sent to {$this->username}";
@@ -31,6 +37,6 @@ class AddFriend extends Component
 
     public function render()
     {
-        return view('livewire.add-friend');
+        return view('livewire.modals.add-friend');
     }
 }
