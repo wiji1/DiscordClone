@@ -2,6 +2,10 @@
 
 namespace App\Livewire\Actions;
 
+use App\Http\Controllers\FriendController;
+use App\Models\FriendRequest;
+use App\Models\Friendship;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -16,14 +20,40 @@ class AddFriend extends Component
             'username' => 'required|min:3|max:50',
         ]);
 
-        $users = DB::select('select * from users where username = ?', [$this->username]);
-        if (count($users) === 0) {
+        $user = User::where('username', $this->username)->first();
+
+        if (!$user) {
             $this->addError('username', 'User not found');
             return;
         }
 
-        $user = $users[0];
-        //TODO: Send friend request to $user->id
+        $sender = auth()->user();
+
+        if ($sender->id === $user->id) {
+            $this->addError('username', 'You cannot send a friend request to yourself');
+            return;
+        }
+
+        $existingRequest = FriendController::getFriendRequest($sender->id, $user->id);
+
+        if ($existingRequest) {
+            $this->addError('username', 'Friend request already sent');
+            return;
+        }
+
+        $existingFriendship = FriendController::getFriendship($sender->id, $user->id);
+
+        if ($existingFriendship) {
+            $this->addError('username', 'You are already friends with this user');
+            return;
+        }
+
+        FriendRequest::create([
+            'sender_id' => $sender->id,
+            'recipient_id' => $user->id,
+        ]);
+
+        FriendController::handleFriendship($sender->id, $user->id);
 
         // Show success message
         $this->message = "Friend request sent to {$this->username}";
@@ -33,6 +63,8 @@ class AddFriend extends Component
 
         // Close modal after successful submission
         $this->dispatch('close-modal');
+
+        $this->dispatch('refreshView');
     }
 
     public function render()
