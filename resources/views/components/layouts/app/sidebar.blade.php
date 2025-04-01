@@ -21,22 +21,29 @@
 
             <flux:spacer />
 
-
-
-            <!-- TODO: Change these buttons -->
-
             <flux:navlist variant="outline" id="openModalButton">
                 <div>
-                    <flux:navlist.item icon="user-search" wire:click="$dispatch('open-modal', {
-                        modalId: 'add-friend-modal',
-                        title: 'Add a Friend',
-                        content: 'add-friend',
-                        size: 'md'
+                    <flux:navlist.item icon="user-search" @click="$dispatch('open-modal', {
+                        data: {
+                            modalId: 'add-friend-modal',
+                            title: 'Add Friend',
+                            content: 'App\\\\Livewire\\\\Actions\\\\AddFriend',
+                            size: 'md',
+                            showFooter: false,
+                        }
                     })">
                     {{ __('Add Friend') }}
                     </flux:navlist.item>
                 </div>
-                <flux:navlist.item icon="server" href="/dashboard" target="_blank">
+                <flux:navlist.item icon="server" @click="$dispatch('open-modal', {
+                        data: {
+                            modalId: 'join-server-modal',
+                            title: 'Join Server',
+                            content: 'App\\\\Livewire\\\\Actions\\\\JoinServer',
+                            size: 'md',
+                            showFooter: false,
+                        }
+                    })">
                 {{ __('Join Server') }}
                 </flux:navlist.item>
             </flux:navlist>

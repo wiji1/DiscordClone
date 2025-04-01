@@ -51,7 +51,11 @@
                             <h3 class="text-lg font-medium leading-6 text-zinc-900 dark:text-white" id="modal-title">
                                 {{ $title }}
                             </h3>
-                            <button type="button" class="rounded-md bg-white dark:bg-zinc-900 text-zinc-400 hover:text-zinc-500 dark:hover:text-zinc-300 focus:outline-none" @click="open = false">
+                            <button
+                                type="button"
+                                class="rounded-md bg-white dark:bg-zinc-900 text-zinc-400 hover:text-zinc-500 dark:hover:text-zinc-300 focus:outline-none"
+                                @click="open = false"
+                            >
                                 <span class="sr-only">Close</span>
                                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -60,32 +64,38 @@
                         </div>
 
                         <div class="mt-3 sm:mt-4">
-                            @if(is_string($content))
-                                <div class="text-sm text-zinc-500 dark:text-zinc-400">
-                                    {{ $content }}
-                                </div>
+                            @if(is_string($content) && !empty($content))
+                                @if(str_starts_with($content, 'App\\Livewire\\'))
+                                    @livewire($content, [], key('modal-content-'.$modalId))
+                                @else
+                                    <div class="text-sm text-zinc-500 dark:text-zinc-400">
+                                        {{ $content }}
+                                    </div>
+                                @endif
                             @else
                                 <livewire:is :component="$content" :key="'modal-content-'.$modalId" />
                             @endif
                         </div>
 
-                        <div class="mt-5 sm:mt-6 flex justify-end space-x-2">
-                            <button
-                                type="button"
-                                class="inline-flex justify-center rounded-md border border-transparent bg-zinc-200 dark:bg-zinc-700 px-4 py-2 text-sm font-medium text-zinc-900 dark:text-white hover:bg-zinc-300 dark:hover:bg-zinc-600 focus:outline-none"
-                                @click="open = false"
-                            >
-                                Close
-                            </button>
+                        @if($showFooter)
+                            <div class="mt-5 sm:mt-6 flex justify-end space-x-2">
+                                <button
+                                    type="button"
+                                    class="inline-flex justify-center rounded-md border border-transparent bg-zinc-200 dark:bg-zinc-700 px-4 py-2 text-sm font-medium text-zinc-900 dark:text-white hover:bg-zinc-300 dark:hover:bg-zinc-600 focus:outline-none"
+                                    @click="open = false"
+                                >
+                                    {{ $cancelText }}
+                                </button>
 
-                            <button
-                                type="button"
-                                class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none"
-                                wire:click="$dispatch('modal-confirmed', {modalId: '{{ $modalId }}'})"
-                            >
-                                Confirm
-                            </button>
-                        </div>
+                                <button
+                                    type="button"
+                                    class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none"
+                                    wire:click="confirm"
+                                >
+                                    {{ $confirmText }}
+                                </button>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
