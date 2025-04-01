@@ -3,6 +3,8 @@
     <head>
         @include('partials.head')
     </head>
+    @livewire('modal')
+
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:sidebar sticky stashable class="border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
@@ -13,7 +15,7 @@
 
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+{{--                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>--}}
                 </flux:navlist.group>
             </flux:navlist>
 
@@ -22,10 +24,16 @@
 
 
             <!-- TODO: Change these buttons -->
+
             <flux:navlist variant="outline" id="openModalButton">
                 <div>
-                    <flux:navlist.item icon="user-search" href="/dashboard" wire:click="$dispatch('open-modal', {modalId: 'add-friend-modal'})">
-                        {{ __('Add Friend') }}
+                    <flux:navlist.item icon="user-search" wire:click="$dispatch('open-modal', {
+                        modalId: 'add-friend-modal',
+                        title: 'Add a Friend',
+                        content: 'add-friend',
+                        size: 'md'
+                    })">
+                    {{ __('Add Friend') }}
                     </flux:navlist.item>
                 </div>
                 <flux:navlist.item icon="server" href="/dashboard" target="_blank">
@@ -132,5 +140,6 @@
         {{ $slot }}
 
         @fluxScripts
+        @livewireScripts
     </body>
 </html>
