@@ -19,7 +19,7 @@
             <label for="username" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Username</label>
             <div class="mt-1">
                 <input type="text" name="username" id="username" wire:model="username"
-                       class="block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white sm:text-sm"
+                       class="block w-full h-12 pl-3 rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white sm:text-sm"
                        placeholder="Enter username">
             </div>
             @error('username')
