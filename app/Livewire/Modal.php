@@ -16,15 +16,24 @@ class Modal extends Component
     public $confirmText = 'Confirm';
     public $cancelText = 'Close';
 
-    #[On('open-modal')]
+    public $componentParams = [];
+
+    #[On('open-custom-modal')]
     public function openModal($data = [])
     {
+        if ($this->isOpen) return;
+
         $this->isOpen = true;
         $this->modalId = $data['modalId'] ?? 'default-modal';
         $this->title = $data['title'] ?? 'Modal Title';
 
         $content = $data['content'] ?? '';
         $this->content = $this->resolveContent($content);
+
+        // Extract component parameters (remove known modal config keys)
+        $this->componentParams = array_diff_key($data, array_flip([
+            'modalId', 'title', 'content', 'size', 'showFooter', 'confirmText', 'cancelText'
+        ]));
 
         $this->modalSize = $data['size'] ?? 'md';
         $this->showFooter = $data['showFooter'] ?? true;

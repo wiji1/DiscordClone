@@ -45,7 +45,8 @@
 
     <flux:navlist variant="outline" id="openModalButton">
         <div>
-            <flux:navlist.item icon="user-search" @click="$dispatch('open-modal', {
+            <flux:navlist.item icon="user-search"
+             @click="$dispatch('open-custom-modal', {
                         data: {
                             modalId: 'add-friend-modal',
                             title: 'Add Friend',
@@ -57,7 +58,7 @@
                 {{ __('Add Friend') }}
             </flux:navlist.item>
         </div>
-        <flux:navlist.item icon="server" @click="$dispatch('open-modal', {
+        <flux:navlist.item icon="server" @click="$dispatch('open-custom-modal', {
                         data: {
                             modalId: 'join-server-modal',
                             title: 'Join Server',

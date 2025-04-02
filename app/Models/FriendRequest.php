@@ -13,12 +13,12 @@ class FriendRequest extends Model
         'recipient_id',
     ];
 
-    public function user()
+    public function sender()
     {
         return $this->belongsTo(User::class, 'sender_id');
     }
 
-    public function friend()
+    public function recipient()
     {
         return $this->belongsTo(User::class, 'recipient_id');
     }

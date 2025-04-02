@@ -24,7 +24,7 @@
                     name="serverId"
                     id="serverId"
                     wire:model="serverId"
-                    class="block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white sm:text-sm"
+                    class="block w-full h-12 pl-3 rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white sm:text-sm"
                     placeholder="Enter server ID or invite code"
                 >
             </div>
