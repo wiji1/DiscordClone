@@ -5,6 +5,7 @@ namespace App\Livewire\Actions;
 use App\Http\Controllers\FriendController;
 use App\Models\FriendRequest;
 use App\Models\Friendship;
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -53,6 +54,12 @@ class AddFriend extends Component
             'recipient_id' => $user->id,
         ]);
 
+        Notification::create([
+            'user_id' => $user->id,
+            'message' => 'You have a new friend request from ' . $sender->username,
+            'link' => route('pages.friends'),
+        ]);
+
         FriendController::handleFriendship($sender->id, $user->id);
 
         // Show success message
@@ -63,7 +70,6 @@ class AddFriend extends Component
 
         // Close modal after successful submission
         $this->dispatch('close-modal');
-
         $this->dispatch('refreshView');
     }
 

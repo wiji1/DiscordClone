@@ -13,14 +13,35 @@
         <x-app-logo />
     </a>
 
-    <flux:navlist variant="outline">
-        <flux:navlist.group :heading="__('Platform')" class="grid">
-            {{--                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>--}}
-        </flux:navlist.group>
+    <flux:navlist variant="outline" id="openModalButton">
+        <div>
+            @php
+                $unreadCount = auth()->user()->notifications()->where('read', false)->count();
+            @endphp
+            <flux:navlist.item icon="bell"
+                               @click="$dispatch('open-custom-modal', {
+                data: {
+                    modalId: 'notifications-modal',
+                    title: 'Notifications',
+                    content: 'App\\\\Livewire\\\\Components\\\\Notifications',
+                    size: 'xl',
+                    showFooter: false,
+                }
+            })">
+                {{ __('Notifications') }}
+                @if($unreadCount > 0)
+                    <span class="ml-2 inline-flex items-center justify-center px-1.5 py-0.5 text-[11px] font-medium rounded-full bg-blue-500 text-white dark:bg-blue-600 dark:text-blue-100 self-center">
+                {{ $unreadCount }}
+            </span>
+                @endif
+            </flux:navlist.item>
+        </div>
     </flux:navlist>
 
     <flux:navlist variant="outline">
         <flux:navlist.group :heading="__('Friends')" class="grid gap-1">
+            <flux:navlist.item icon="user" :href="route('pages.friends')" :current="request()->routeIs('pages.friends')" wire:navigate>{{ __('Friends') }}</flux:navlist.item>
+            <br>
             @php
                 $friends = auth()->user()->getFriends();
             @endphp
@@ -38,6 +59,12 @@
                     </div>
                 </flux:navlist.item>
             @endforeach
+        </flux:navlist.group>
+    </flux:navlist>
+
+    <flux:navlist variant="outline">
+        <flux:navlist.group :heading="__('Servers')" class="grid">
+            <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
         </flux:navlist.group>
     </flux:navlist>
 
