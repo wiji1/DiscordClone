@@ -12,7 +12,9 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::get('/friends', FriendsPage::class);
+Route::get('/friends', FriendsPage::class)
+    ->middleware(['auth', 'verified'])
+    ->name('pages.friends');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
