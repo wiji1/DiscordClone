@@ -68,7 +68,7 @@
                 <div class="h-0 flex-grow overflow-y-auto p-4" id="messages-container"
                      x-data="{}"
                      x-init="$nextTick(() => { $el.scrollTop = $el.scrollHeight; })"
-                     wire:poll.3s="refreshMessages">
+                     wire:poll.1s="refreshMessages">
                     <div class="space-y-4">
                         @forelse($messages as $msg)
                             <div class="flex {{ $msg->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
