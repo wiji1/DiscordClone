@@ -1,6 +1,6 @@
 <div>
     @php
-        $notifications = auth()->user()->notifications()->orderBy('created_at', 'desc')->get();
+        $notifications = auth()->user()->notifications()->orderBy('created_at', 'desc')->take(5)->get();
         $unreadCount = auth()->user()->notifications()->where('read', false)->count();
     @endphp
 

@@ -29,7 +29,7 @@ class FriendController extends Controller
     public static function getFriendship($user1, $user2)
     {
         $friendship = Friendship::where('user_id', $user1)
-            ->orWhere('friend_id', $user2)
+            ->where('friend_id', $user2)
             ->first();
 
         if ($friendship) {
@@ -37,7 +37,7 @@ class FriendController extends Controller
         }
 
         $friendship = Friendship::where('user_id', $user2)
-            ->orWhere('friend_id', $user1)
+            ->where('friend_id', $user1)
             ->first();
 
         if ($friendship) {

@@ -1,4 +1,5 @@
 {{-- resources/views/livewire/modal.blade.php --}}
+@php use App\Livewire\Modal; @endphp
 <div>
     @if($isOpen)
         <div

@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Pages\ChatPage;
 use App\Livewire\Pages\FriendsPage;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -15,6 +16,10 @@ Route::view('dashboard', 'dashboard')
 Route::get('/friends', FriendsPage::class)
     ->middleware(['auth', 'verified'])
     ->name('pages.friends');
+
+Route::get('/chat/{friendId?}', ChatPage::class)
+    ->middleware(['auth', 'verified'])
+    ->name('pages.chat');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');

@@ -18,6 +18,8 @@ class FriendsPage extends Component
         $addFriend->username = $username;
 
         $addFriend->addFriend();
+
+        $this->dispatch('refreshView');
     }
 
     public function rejectFriendRequest($username): void
@@ -27,11 +29,18 @@ class FriendsPage extends Component
             ->first();
 
         $request->delete();
+
+        $this->dispatch('refreshView');
     }
 
     public function mount()
     {
         // Initialize component
+    }
+
+    public function startChat($friendId)
+    {
+        return redirect()->route('pages.chat', ['friendId' => $friendId]);
     }
 
     public function render()

@@ -98,6 +98,19 @@
         </div>
     </div>
 
+    @push('scripts')
+        <script>
+            document.addEventListener('livewire:initialized', () => {
+                console.log('Refresh listener added');
+
+                Livewire.on('refreshView', () => {
+                    location.reload();
+                });
+
+            });
+        </script>
+    @endpush
+
     @livewireStyles
     @livewireScripts
 </div>

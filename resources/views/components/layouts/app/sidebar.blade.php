@@ -3,7 +3,6 @@
 <head>
     @include('partials.head')
 </head>
-@livewire('modal')
 
 <body class="min-h-screen bg-white dark:bg-zinc-800">
 <flux:sidebar sticky stashable class="border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
@@ -47,11 +46,12 @@
             @endphp
 
             @foreach ($friends as $friend)
-                <flux:navlist.item class="block px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg">
+                <flux:navlist.item class="block px-3 py-5 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg"
+                                   @click="window.location.href='{{ route('pages.chat', ['friendId' => $friend->id]) }}'">
                     <div class="flex items-center gap-3 w-full">
-                                <span class="flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                    {{ $friend->initials() }}
-                                </span>
+                            <span class="flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                {{ $friend->initials() }}
+                            </span>
                         <div class="flex-grow min-w-0 overflow-hidden">
                             <div class="font-semibold truncate">{{ $friend->username }}</div>
                             <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $friend->email }}</div>
@@ -72,7 +72,7 @@
 
     <flux:navlist variant="outline" id="openModalButton">
         <div>
-            <flux:navlist.item icon="user-search"
+            <flux:navlist.item class="py-4" icon="user-search"
              @click="$dispatch('open-custom-modal', {
                         data: {
                             modalId: 'add-friend-modal',
@@ -85,7 +85,7 @@
                 {{ __('Add Friend') }}
             </flux:navlist.item>
         </div>
-        <flux:navlist.item icon="server" @click="$dispatch('open-custom-modal', {
+        <flux:navlist.item class="py-4" icon="server" @click="$dispatch('open-custom-modal', {
                         data: {
                             modalId: 'join-server-modal',
                             title: 'Join Server',
