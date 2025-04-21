@@ -16,6 +16,7 @@ class ChatPage extends Component
     public $message = '';
     public $messages = [];
     public $friendsList = [];
+    public $messageCount = 0;
 
     protected $listeners = ['refreshChat' => '$refresh', 'messageReceived' => 'refreshMessages'];
 
@@ -46,6 +47,8 @@ class ChatPage extends Component
             return;
         }
 
+        $oldCount = count($this->messages);
+
         $this->messages = Chat::where(function ($query) {
             $query->where('sender_id', auth()->id())
                 ->where('recipient_id', $this->selectedFriend->id);
@@ -57,12 +60,15 @@ class ChatPage extends Component
             ->orderBy('created_at', 'asc')
             ->get();
 
+        $newCount = count($this->messages);
+
+        // Dispatch event with flag indicating if new messages were added
+        $this->dispatch('messagesRefreshed', hasNewMessages: $newCount > $oldCount);
+
         Chat::where('sender_id', $this->selectedFriend->id)
             ->where('recipient_id', auth()->id())
             ->where('read', false)
             ->update(['read' => true]);
-
-        $this->dispatch('messagesRefreshed');
     }
 
     public function sendMessage(): void
@@ -94,16 +100,12 @@ class ChatPage extends Component
         }
 
         $this->loadMessages();
-        $this->dispatch('messageSent');
-        $this->dispatch('messagesRefreshed');
-
+        $this->dispatch('messageSent', shouldScroll: true);
     }
 
     public function refreshMessages(): void
     {
         $this->loadMessages();
-        $this->dispatch('messagesRefreshed');
-
     }
 
     public function render()

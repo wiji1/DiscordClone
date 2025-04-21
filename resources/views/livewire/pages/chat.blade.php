@@ -125,36 +125,44 @@
 
     @push('scripts')
         <script>
-            document.addEventListener('livewire:initialized', () => {
+            document.addEventListener('livewire:init', function() {
                 const messagesContainer = document.getElementById('messages-container');
 
                 const scrollToBottom = () => {
-                    console.log('Scrolling to bottom');
                     if (messagesContainer) {
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        setTimeout(() => {
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }, 50);
                     }
                 };
-
-                Livewire.on('messageSent', scrollToBottom);
 
                 if (messagesContainer) {
                     scrollToBottom();
                 }
 
-                Livewire.on('friendSelected', () => {
-                    setTimeout(scrollToBottom);
+                Livewire.on('messagesRefreshed', ({ hasNewMessages }) => {
+                    if (hasNewMessages) {
+                        scrollToBottom();
+                    }
                 });
 
-                Livewire.on('messagesRefreshed', scrollToBottom);
-            });
+                Livewire.on('messageSent', ({ shouldScroll }) => {
+                    if (shouldScroll) {
+                        scrollToBottom();
+                    }
+                });
 
-            document.addEventListener('livewire:load', function() {
-                Livewire.hook('message.processed', (message, component) => {
-                    const messagesContainer = document.getElementById('messages-container');
-                    if (messagesContainer) {
-                        const isNearBottom = (messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight) < 100;
+                Livewire.on('friendSelected', () => {
+                    scrollToBottom();
+                });
+
+                Livewire.hook('morph.updated', ({ el, component }) => {
+                    if (el.id === 'messages-container' || el.querySelector('#messages-container')) {
+                        const isNearBottom = messagesContainer &&
+                            (messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight < 100);
+
                         if (isNearBottom) {
-                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                            scrollToBottom();
                         }
                     }
                 });
@@ -162,5 +170,3 @@
         </script>
     @endpush
 </div>
-
-
