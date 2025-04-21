@@ -2,6 +2,9 @@
     @stack('scripts')
     @livewire('modal')
 
+    @livewireStyles
+    @livewireScripts
+
     <flux:main>
         {{ $slot }}
     </flux:main>

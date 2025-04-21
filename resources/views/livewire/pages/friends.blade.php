@@ -110,7 +110,4 @@
             });
         </script>
     @endpush
-
-    @livewireStyles
-    @livewireScripts
 </div>
