@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,7 +12,7 @@ use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -77,5 +78,37 @@ class User extends Authenticatable
     public function notifications()
     {
         return $this->hasMany(Notification::class);
+    }
+
+    public function ownedChatRooms()
+    {
+        return $this->hasMany(ChatRoom::class, 'owner_id');
+    }
+
+    public function chatRooms()
+    {
+        return $this->belongsToMany(ChatRoom::class, 'chat_room_users')
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
+    public function chatRoomMessages()
+    {
+        return $this->hasMany(ChatRoomMessage::class);
+    }
+
+    public function isChatRoomAdmin(ChatRoom $chatRoom)
+    {
+        return $this->chatRooms()
+            ->where('chat_room_id', $chatRoom->id)
+            ->wherePivotIn('role', ['owner', 'admin'])
+            ->exists();
+    }
+
+    public function isChatRoomMember(ChatRoom $chatRoom)
+    {
+        return $this->chatRooms()
+            ->where('chat_room_id', $chatRoom->id)
+            ->exists();
     }
 }

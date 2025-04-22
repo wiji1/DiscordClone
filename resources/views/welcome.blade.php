@@ -19,7 +19,7 @@
         </div>
         <nav class="flex items-center gap-2">
             @auth
-                <a href="{{ url('/dashboard') }}" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                <a href="{{ url('/rooms') }}" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
                     Dashboard
                 </a>
             @else

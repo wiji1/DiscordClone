@@ -8,7 +8,7 @@
 <flux:sidebar sticky stashable class="border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
     <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-    <a href="{{ route('dashboard') }}" class="mr-5 flex items-center space-x-2" wire:navigate>
+    <a href="{{ route('pages.chat-rooms') }}" class="mr-5 flex items-center space-x-2" wire:navigate>
         <x-app-logo />
     </a>
 
@@ -63,8 +63,28 @@
     </flux:navlist>
 
     <flux:navlist variant="outline">
-        <flux:navlist.group :heading="__('Servers')" class="grid">
-            <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+        <flux:navlist.group :heading="__('Chat rooms')" class="grid">
+            <flux:navlist.item icon="home" :href="route('pages.chat-rooms')" :current="request()->routeIs('pages.chat-rooms')" wire:navigate>{{ __('Rooms') }}</flux:navlist.item>
+            <br>
+            @php
+                $chatrooms = auth()->user()->chatRooms;
+            @endphp
+
+            @foreach ($chatrooms as $room)
+                <flux:navlist.item class="block px-3 py-5 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg"
+                                   @click="window.location.href='{{ route('pages.chat-rooms', ['roomId' => $room->id]) }}'">
+                    <div class="flex items-center gap-3 w-full">
+                            <span class="flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                {{ $room->name[0] }}
+                            </span>
+                        <div class="flex-grow min-w-0 overflow-hidden">
+                            <div class="font-semibold truncate">{{ $room->name }}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $room->members->count() }} {{ Str::plural('member', $room->members->count()) }}
+                            </div>
+                        </div>
+                    </div>
+                </flux:navlist.item>
+            @endforeach
         </flux:navlist.group>
     </flux:navlist>
 

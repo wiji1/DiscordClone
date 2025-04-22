@@ -28,7 +28,7 @@ class RegistrationTest extends TestCase
 
         $response
             ->assertHasNoErrors()
-            ->assertRedirect(route('dashboard', absolute: false));
+            ->assertRedirect(route('pages.chat-rooms', absolute: false));
 
         $this->assertAuthenticated();
     }
