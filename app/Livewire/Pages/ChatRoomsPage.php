@@ -53,6 +53,7 @@ class ChatRoomsPage extends Component
 
             $this->handleRoomCreated($room->id);
             $this->dispatch('success', message: 'Room created successfully!');
+            redirect()->route('pages.chat-rooms', ['roomId' => $room->id]);
 
         } catch (\Exception $e) {
             Log::error('Error creating room: ' . $e->getMessage());
@@ -81,6 +82,8 @@ class ChatRoomsPage extends Component
 
             $this->handleRoomJoined($room->id);
             $this->dispatch('success', message: 'Joined room successfully!');
+
+            redirect()->route('pages.chat-rooms', ['roomId' => $room->id]);
 
         } catch (\Exception $e) {
             Log::error('Error joining room: ' . $e->getMessage());
@@ -177,62 +180,6 @@ class ChatRoomsPage extends Component
     public function refreshMessages()
     {
         $this->loadMessages();
-    }
-
-    public function createRoom()
-    {
-        $validator = Validator::make(
-            ['formRoomName' => $this->formRoomName],
-            ['formRoomName' => 'required|string|max:255'],
-            ['formRoomDescription' => $this->formRoomDescription],
-            ['formRoomDescription' => 'nullable|string|max:1000'],
-        );
-
-        if ($validator->fails()) {
-            $this->dispatch('error', message: 'Message validation failed');
-            return null;
-        }
-
-
-        $room = ChatRoom::create([
-            'name' => $this->formRoomName,
-            'description' => $this->formRoomDescription,
-            'owner_id' => auth()->id(),
-            'is_public' => $this->formIsPublic
-        ]);
-
-        $room->users()->attach(auth()->id(), ['role' => 'owner']);
-
-        $this->handleRoomCreated($room->id);
-
-        return redirect()->route('pages.chat-rooms', ['roomId' => $room->id]);
-    }
-
-    public function joinRoom()
-    {
-
-        $validator = Validator::make(
-            ['formInviteCode' => $this->formInviteCode],
-            ['formInviteCode' => 'required|string|exists:chat_rooms,invite_code']
-        );
-
-        if ($validator->fails()) {
-            $this->dispatch('error', message: 'Message validation failed');
-            return null;
-        }
-
-        $room = ChatRoom::where('invite_code', $this->formInviteCode)->first();
-
-        if (auth()->user()->isChatRoomMember($room)) {
-            $this->dispatch('error', message: 'You are already a member of this room');
-            return null;
-        }
-
-        $room->users()->attach(auth()->id(), ['role' => 'member']);
-
-        $this->handleRoomJoined($room->id);
-
-        return redirect()->route('pages.chat-rooms', ['roomId' => $room->id]);
     }
 
     public function leaveRoom()

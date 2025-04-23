@@ -19,6 +19,7 @@
                         type="button"
                         class="text-red-500 hover:text-red-700 text-sm"
                     >
+                        <!-- TODO: Add remove functionality -->
                         {{ __('Remove') }}
                     </button>
                 @endif
