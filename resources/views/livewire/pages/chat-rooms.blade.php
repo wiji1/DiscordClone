@@ -7,7 +7,15 @@
                 <h2 class="text-xl font-bold dark:text-white">{{ __('Chat Rooms') }}</h2>
                 <div class="flex gap-2">
                     <button
-                        wire:click="openCreateRoomModal"
+                        wire:click="$dispatch('open-custom-modal', {
+                        data: {
+                            modalId: 'create-room-modal',
+                            title: 'Create New Room',
+                            content: 'App\\\\Livewire\\\\Actions\\\\CreateRoom',
+                            size: 'lg',
+                            showFooter: false
+                        }
+                    })"
                         class="p-1 rounded-md bg-blue-500 text-white hover:bg-blue-600"
                         title="{{ __('Create Room') }}"
                     >
@@ -16,7 +24,15 @@
                         </svg>
                     </button>
                     <button
-                        wire:click="openJoinRoomModal"
+                        wire:click="$dispatch('open-custom-modal', {
+                            data: {
+                                modalId: 'join-room-modal',
+                                title: 'Join Room',
+                                content: 'App\\\\Livewire\\\\Actions\\\\JoinRoom',
+                                size: 'lg',
+                                showFooter: false
+                            }
+                        })"
                         class="p-1 rounded-md bg-green-500 text-white hover:bg-green-600"
                         title="{{ __('Join Room') }}"
                     >
@@ -61,14 +77,30 @@
                     <div class="rounded-lg p-4 text-center dark:text-gray-400">
                         <p>{{ __('No chat rooms yet.') }}</p>
                         <button
-                            wire:click="openCreateRoomModal"
+                            wire:click="$dispatch('open-custom-modal', {
+                                data: {
+                                    modalId: 'create-room-modal',
+                                    title: 'Create New Room',
+                                    content: 'App\\\\Livewire\\\\Actions\\\\CreateRoom',
+                                    size: 'lg',
+                                    showFooter: false
+                                }
+                            })"
                             class="mt-2 inline-block text-sm text-blue-500 hover:underline"
                         >
                             {{ __('Create your first room') }}
                         </button>
                         <p class="mt-2">{{ __('or') }}</p>
                         <button
-                            wire:click="openJoinRoomModal"
+                            wire:click="$dispatch('open-custom-modal', {
+                                data: {
+                                    modalId: 'join-room-modal',
+                                    title: 'Join Room',
+                                    content: 'App\\\\Livewire\\\\Actions\\\\JoinRoom',
+                                    size: 'lg',
+                                    showFooter: false
+                                }
+                            })"
                             class="mt-2 inline-block text-sm text-blue-500 hover:underline"
                         >
                             {{ __('Join with invite code') }}
@@ -93,7 +125,16 @@
 
                     <div class="flex gap-2">
                         <button
-                            wire:click="showMembers"
+                            wire:click="$dispatch('open-custom-modal', {
+                                data: {
+                                    modalId: 'room-members-modal',
+                                    title: 'Room Members',
+                                    content: 'App\\\\Livewire\\\\Actions\\\\RoomMembers',
+                                    size: 'lg',
+                                    showFooter: false,
+                                    roomId: {{ $selectedRoom->id }}
+                                }
+                            })"
                             class="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-zinc-800 text-neutral-500"
                             title="{{ __('Members') }}"
                         >
@@ -102,7 +143,16 @@
                             </svg>
                         </button>
                         <button
-                            wire:click="showInviteInfo"
+                            wire:click="$dispatch('open-custom-modal', {
+                                data: {
+                                    modalId: 'room-invite-modal',
+                                    title: 'Invite People',
+                                    content: 'App\\\\Livewire\\\\Actions\\\\RoomInvite',
+                                    size: 'lg',
+                                    showFooter: false,
+                                    roomId: {{ $selectedRoom->id }}
+                                }
+                            })"
                             class="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-zinc-800 text-neutral-500"
                             title="{{ __('Invite') }}"
                         >
@@ -179,13 +229,29 @@
                         <p class="mt-2 text-gray-500 dark:text-gray-400">{{ __('Choose from your rooms list or create/join a new room') }}</p>
                         <div class="mt-4 flex justify-center gap-4">
                             <button
-                                wire:click="openCreateRoomModal"
+                                wire:click="$dispatch('open-custom-modal', {
+                                    data: {
+                                        modalId: 'create-room-modal',
+                                        title: 'Create New Room',
+                                        content: 'App\\\\Livewire\\\\Actions\\\\CreateRoom',
+                                        size: 'lg',
+                                        showFooter: false
+                                    }
+                                })"
                                 class="inline-block rounded-lg bg-blue-500 px-4 py-2 font-medium text-white hover:bg-blue-600"
                             >
                                 {{ __('Create Room') }}
                             </button>
                             <button
-                                wire:click="openJoinRoomModal"
+                                wire:click="$dispatch('open-custom-modal', {
+                                    data: {
+                                        modalId: 'join-room-modal',
+                                        title: 'Join Room',
+                                        content: 'App\\\\Livewire\\\\Actions\\\\JoinRoom',
+                                        size: 'lg',
+                                        showFooter: false
+                                    }
+                                })"
                                 class="inline-block rounded-lg bg-green-500 px-4 py-2 font-medium text-white hover:bg-green-600"
                             >
                                 {{ __('Join Room') }}
@@ -196,250 +262,6 @@
             @endif
         </div>
     </div>
-
-    <!-- Create Room Modal -->
-    @if($showCreateRoomModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <div class="fixed inset-0 bg-zinc-900/20 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
-
-            <div class="relative bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-xl max-w-md w-full mx-4 sm:mx-auto">
-                <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">{{ __('Create New Room') }}</h3>
-
-                <form wire:submit.prevent="createRoom">
-                    <div class="space-y-4">
-                        <div>
-                            <label for="roomName" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Room Name') }}</label>
-                            <input
-                                type="text"
-                                id="roomName"
-                                wire:model="formRoomName"
-                                class="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-neutral-600 dark:bg-zinc-800 dark:text-white"
-                                placeholder="{{ __('Enter room name') }}"
-                            >
-                            @error('formRoomName') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div>
-                            <label for="roomDescription" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Description') }}</label>
-                            <textarea
-                                id="roomDescription"
-                                wire:model="formRoomDescription"
-                                class="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-neutral-600 dark:bg-zinc-800 dark:text-white"
-                                placeholder="{{ __('Optional room description') }}"
-                                rows="3"
-                            ></textarea>
-                        </div>
-
-                        <div class="flex items-center">
-                            <input
-                                type="checkbox"
-                                id="isPublic"
-                                wire:model="formIsPublic"
-                                class="rounded border-neutral-300 text-blue-500 focus:ring-blue-500 dark:border-neutral-600"
-                            >
-                            <label for="isPublic" class="ml-2 block text-sm text-zinc-700 dark:text-zinc-300">
-                                {{ __('Make this room public (visible to everyone)') }}
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 flex justify-end gap-3">
-                        <button
-                            type="button"
-                            type="button"
-                            class="px-4 py-2 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
-                            wire:click="$set('showCreateRoomModal', false)"
-                        >
-                            {{ __('Cancel') }}
-                        </button>
-                        <button
-                            type="submit"
-                            class="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 focus:outline-none"
-                        >
-                            {{ __('Create Room') }}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    @endif
-
-    <!-- Join Room Modal -->
-    @if($showJoinRoomModal)
-        <div class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <div class="fixed inset-0 bg-zinc-900/20 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
-
-            <div class="relative bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-xl max-w-md w-full mx-4 sm:mx-auto">
-                <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-4">{{ __('Join Room') }}</h3>
-
-                <form wire:submit.prevent="joinRoom">
-                    <div>
-                        <label for="inviteCode" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">{{ __('Invite Code') }}</label>
-                        <input
-                            type="text"
-                            id="inviteCode"
-                            wire:model="formInviteCode"
-                            class="w-full rounded-lg border border-neutral-300 px-4 py-2 focus:border-blue-500 focus:outline-none dark:border-neutral-600 dark:bg-zinc-800 dark:text-white"
-                            placeholder="{{ __('Enter room invite code') }}"
-                        >
-                        @error('formInviteCode') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div class="mt-6 flex justify-end gap-3">
-                        <button
-                            type="button"
-                            class="px-4 py-2 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"
-                            wire:click="$set('showJoinRoomModal', false)"
-                        >
-                            {{ __('Cancel') }}
-                        </button>
-                        <button
-                            type="submit"
-                            class="px-4 py-2 rounded-md bg-green-500 text-white hover:bg-green-600 focus:outline-none"
-                        >
-                            {{ __('Join Room') }}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    @endif
-
-    <!-- Members Modal -->
-    @if($showMembersModal && $selectedRoom)
-        <div class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <div class="fixed inset-0 bg-zinc-900/20 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
-
-            <div class="relative bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-xl max-w-md w-full mx-4 sm:mx-auto">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-medium text-zinc-900 dark:text-white">{{ __('Room Members') }}</h3>
-                    <button
-                        type="button"
-                        class="rounded-md p-1 text-zinc-400 hover:text-zinc-500 dark:hover:text-zinc-300 focus:outline-none"
-                        wire:click="$set('showMembersModal', false)"
-                    >
-                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-
-                <div class="max-h-60 overflow-y-auto">
-                    <ul class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                        @forelse($roomMembers as $member)
-                            <li class="py-3 flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white flex-shrink-0">
-                                        {{ $member->initials() }}
-                                    </span>
-                                    <div class="ml-3">
-                                        <p class="font-medium dark:text-white">{{ $member->username }}</p>
-                                        <p class="text-xs text-zinc-500 dark:text-zinc-400">
-                                            <!-- TODO: Fix error here -->
-{{--                                            {{ $member->pivot->role }}--}}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                @if($selectedRoom->owner_id === auth()->id() && $member->id !== auth()->id())
-                                    <button
-                                        type="button"
-                                        class="text-red-500 hover:text-red-700 text-sm"
-                                    >
-                                        {{ __('Remove') }}
-                                    </button>
-                                @endif
-                            </li>
-                        @empty
-                            <li class="py-3 text-center text-zinc-500 dark:text-zinc-400">
-                                {{ __('No members found') }}
-                            </li>
-                        @endforelse
-                    </ul>
-                </div>
-
-                <div class="mt-4 pt-3 border-t border-zinc-200 dark:border-zinc-700">
-                    <button
-                        type="button"
-                        class="w-full px-4 py-2 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
-                        wire:click="$set('showMembersModal', false)"
-                    >
-                        {{ __('Close') }}
-                    </button>
-                </div>
-            </div>
-        </div>
-    @endif
-
-    <!-- Invite Modal -->
-    @if($showInviteModal && $selectedRoom)
-        <div class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <div class="fixed inset-0 bg-zinc-900/20 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
-
-            <div class="relative bg-white dark:bg-zinc-900 rounded-lg p-6 shadow-xl max-w-md w-full mx-4 sm:mx-auto">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-medium text-zinc-900 dark:text-white">{{ __('Invite to Room') }}</h3>
-                    <button
-                        type="button"
-                        class="rounded-md p-1 text-zinc-400 hover:text-zinc-500 dark:hover:text-zinc-300 focus:outline-none"
-                        wire:click="$set('showInviteModal', false)"
-                    >
-                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-
-                <div class="mb-6">
-                    <p class="mb-2 text-sm text-zinc-700 dark:text-zinc-300">{{ __('Share this invite code with friends to join this room:') }}</p>
-                    <div class="flex">
-                        <input
-                            type="text"
-                            value="{{ $selectedRoom->invite_code }}"
-                            class="flex-1 rounded-l-lg border border-neutral-300 px-4 py-2 bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white"
-                            readonly
-                        >
-                        <button
-                            type="button"
-                            class="rounded-r-lg bg-blue-500 px-4 text-white hover:bg-blue-600"
-                            onclick="copyToClipboard('{{ $selectedRoom->invite_code }}')"
-                        >
-                            {{ __('Copy') }}
-                        </button>
-
-                        <div id="copy-toast"
-                             class="hidden fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-500 opacity-0 z-50">
-                            {{ __('Copied to clipboard!') }}
-                        </div>
-                    </div>
-                </div>
-
-                @if($selectedRoom->owner_id === auth()->id())
-                    <div class="mb-4">
-                        <p class="mb-2 text-sm text-zinc-700 dark:text-zinc-300">{{ __('You can also generate a new invite code:') }}</p>
-                        <button
-                            type="button"
-                            class="w-full px-4 py-2 rounded-md bg-yellow-500 text-white hover:bg-yellow-600"
-                            wire:click="regenerateInviteCode"
-                        >
-                            {{ __('Generate New Code') }}
-                        </button>
-                        <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{{ __('Note: This will invalidate the previous invite code.') }}</p>
-                    </div>
-                @endif
-
-                <div class="mt-4 pt-3 border-t border-zinc-200 dark:border-zinc-700">
-                    <button
-                        type="button"
-                        class="w-full px-4 py-2 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
-                        wire:click="$set('showInviteModal', false)"
-                    >
-                        {{ __('Close') }}
-                    </button>
-                </div>
-            </div>
-        </div>
-    @endif
 
     @push('scripts')
         <script>

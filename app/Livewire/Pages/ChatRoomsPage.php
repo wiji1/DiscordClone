@@ -5,6 +5,7 @@ namespace App\Livewire\Pages;
 use App\Models\ChatRoom;
 use App\Models\ChatRoomMessage;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Validator;
@@ -17,10 +18,7 @@ class ChatRoomsPage extends Component
     public $message = '';
     public $messages = [];
     public $roomsList = [];
-    public $showCreateRoomModal = false;
-    public $showJoinRoomModal = false;
     public $showMembersModal = false;
-    public $showInviteModal = false;
 
     public $formRoomName = '';
     public $formRoomDescription = '';
@@ -34,21 +32,72 @@ class ChatRoomsPage extends Component
         'messageReceived' => 'refreshMessages',
         'roomCreated' => 'handleRoomCreated',
         'roomJoined' => 'handleRoomJoined',
-        'refreshRooms' => 'loadRooms'
+        'refreshRooms' => 'loadRooms',
+        'create-room-submitted' => 'handleCreateRoomSubmitted',
+        'join-room-submitted' => 'handleJoinRoomSubmitted'
     ];
+
+    public function handleCreateRoomSubmitted($name, $description, $isPublic): void
+    {
+        try {
+            $room = ChatRoom::create([
+                'name' => $name,
+                'description' => $description,
+                'owner_id' => auth()->id(),
+                'is_public' => $isPublic ?? false
+            ]);
+
+            $room->users()->attach(auth()->id(), ['role' => 'owner']);
+
+            $this->dispatch('close-modal');
+
+            $this->handleRoomCreated($room->id);
+            $this->dispatch('success', message: 'Room created successfully!');
+
+        } catch (\Exception $e) {
+            Log::error('Error creating room: ' . $e->getMessage());
+            $this->dispatch('error', message: 'Failed to create room. Please try again.');
+        }
+    }
+
+    public function handleJoinRoomSubmitted($code): void
+    {
+        try {
+            $room = ChatRoom::where('invite_code', $code)->first();
+
+            if (!$room) {
+                $this->dispatch('error', message: 'Invalid invite code.');
+                return;
+            }
+
+            if (auth()->user()->isChatRoomMember($room)) {
+                $this->dispatch('error', message: 'You are already a member of this room.');
+                return;
+            }
+
+            $room->users()->attach(auth()->id(), ['role' => 'member']);
+
+            $this->dispatch('close-modal');
+
+            $this->handleRoomJoined($room->id);
+            $this->dispatch('success', message: 'Joined room successfully!');
+
+        } catch (\Exception $e) {
+            Log::error('Error joining room: ' . $e->getMessage());
+            $this->dispatch('error', message: 'Failed to join room. Please try again.');
+        }
+    }
 
     public function handleRoomCreated($roomId)
     {
         $this->loadRooms();
         $this->selectRoom($roomId);
-        $this->showCreateRoomModal = false;
     }
 
     public function handleRoomJoined($roomId)
     {
         $this->loadRooms();
         $this->selectRoom($roomId);
-        $this->showJoinRoomModal = false;
     }
 
     public function mount($roomId = null)
@@ -130,12 +179,6 @@ class ChatRoomsPage extends Component
         $this->loadMessages();
     }
 
-    public function openCreateRoomModal()
-    {
-        $this->reset(['formRoomName', 'formRoomDescription', 'formIsPublic']);
-        $this->showCreateRoomModal = true;
-    }
-
     public function createRoom()
     {
         $validator = Validator::make(
@@ -163,12 +206,6 @@ class ChatRoomsPage extends Component
         $this->handleRoomCreated($room->id);
 
         return redirect()->route('pages.chat-rooms', ['roomId' => $room->id]);
-    }
-
-    public function openJoinRoomModal()
-    {
-        $this->reset('formInviteCode');
-        $this->showJoinRoomModal = true;
     }
 
     public function joinRoom()
@@ -220,34 +257,6 @@ class ChatRoomsPage extends Component
         }
 
         return redirect()->route('pages.chat-rooms');
-    }
-
-    public function showMembers()
-    {
-        if (!$this->selectedRoom) {
-            return;
-        }
-
-        $this->roomMembers = $this->selectedRoom->users()->withPivot('role')->get();
-        $this->showMembersModal = true;
-    }
-
-    public function showInviteInfo()
-    {
-        if (!$this->selectedRoom) {
-            return;
-        }
-
-        $this->showInviteModal = true;
-    }
-
-    public function regenerateInviteCode()
-    {
-        if (!$this->selectedRoom || $this->selectedRoom->owner_id !== auth()->id()) {
-            return;
-        }
-
-        $this->selectedRoom->generateNewInviteCode();
     }
 
     public function render()

@@ -30,7 +30,6 @@ class Modal extends Component
         $content = $data['content'] ?? '';
         $this->content = $this->resolveContent($content);
 
-        // Extract component parameters (remove known modal config keys)
         $this->componentParams = array_diff_key($data, array_flip([
             'modalId', 'title', 'content', 'size', 'showFooter', 'confirmText', 'cancelText'
         ]));
@@ -63,14 +62,19 @@ class Modal extends Component
     {
         if (empty($content)) return '';
 
-        if (is_object($content) || class_exists($content)) {
+        if (is_object($content)) {
             return $content;
         }
 
-        if (is_string($content) && str_starts_with($content, 'App\\Livewire\\')) {
+        if (is_string($content)) {
             $class = str_replace('\\\\', '\\', $content);
-            if (class_exists($class)) {
-                return $class;
+
+            try {
+                if (class_exists($class)) {
+                    return $class;
+                }
+            } catch (\Throwable $e) {
+                \Log::error("Failed to resolve modal content: " . $e->getMessage());
             }
         }
 

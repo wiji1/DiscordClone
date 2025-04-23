@@ -105,16 +105,17 @@
                 {{ __('Add Friend') }}
             </flux:navlist.item>
         </div>
+        <!-- TODO: Make this work on all pages -->
         <flux:navlist.item class="py-4" icon="server" @click="$dispatch('open-custom-modal', {
-                        data: {
-                            modalId: 'join-server-modal',
-                            title: 'Join Server',
-                            content: 'App\\\\Livewire\\\\Actions\\\\JoinServer',
-                            size: 'md',
-                            showFooter: false,
-                        }
-                    })">
-            {{ __('Join Server') }}
+                            data: {
+                                modalId: 'join-room-modal',
+                                title: 'Join Room',
+                                content: 'App\\\\Livewire\\\\Actions\\\\JoinRoom',
+                                size: 'lg',
+                                showFooter: false
+                            }
+                        })">
+            {{ __('Join Room') }}
         </flux:navlist.item>
     </flux:navlist>
 
