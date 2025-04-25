@@ -11,21 +11,14 @@ class JoinServer extends Component
 
     public function joinServer()
     {
-        // Validate input
         $this->validate([
             'serverId' => 'required|min:3|max:50',
         ]);
 
-        // Add friend logic here
-        // ...
-
-        // Show success message
         $this->message = "Successfully joined {$this->serverId}";
 
-        // Reset form
         $this->reset('serverId');
 
-        // Close modal after successful submission
         $this->dispatch('close-modal');
     }
 
